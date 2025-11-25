@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>IDS Web Dashboard</title>
+<style>
+    body {
+        background:#0b1220; color:white; font-family:Arial;
+        padding:20px;
+    }
+    input, select {
+        padding:6px; width:200px; margin:4px;
+        background:#111827; color:white; border:1px solid #333;
+    }
+    .container {
+        display:flex;
+        gap:40px;
+    }
+    .panel {
+        padding:20px;
+        background:#111827;
+        border-radius:10px;
+    }
+    button {
+        background:#1f6feb; color:white;
+        padding:10px 20px; border:none;
+        border-radius:5px;
+        margin-top:10px;
+        cursor:pointer;
+    }
+</style>
+</head>
+<body>
+
+<h1>🚀 IDS Web Dashboard</h1>
+
+<div class="container">
+
+<div class="panel">
+<h2>Enter Features</h2>
+
+<form id="predictForm">
+{% for f in features %}
+<label>{{ f }}:</label><br>
+<input name="{{f}}" value="0"><br>
+{% endfor %}
+
+<button type="submit">Predict</button>
+</form>
+
+<h3 id="result"></h3>
+</div>
+
+<div class="panel">
+<h2>Recent Predictions Graph</h2>
+<img id="plot" src="/plot" width="500">
+</div>
+
+</div>
+
+<script>
+document.getElementById("predictForm").onsubmit = async (e)=>{
+    e.preventDefault();
+    let form = new FormData(e.target);
+
+    let res = await fetch("/predict", {
+        method:"POST",
+        body:form
+    });
+
+    let data = await res.json();
+    document.getElementById("result").innerHTML =
+        "Prediction: " + data.prediction +
+        "<br>Confidence: " + data.confidence + "%";
+
+    document.getElementById("plot").src = "/plot?time=" + Date.now();
+};
+</script>
+
+</body>
+</html>
+
